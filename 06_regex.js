@@ -1,451 +1,278 @@
 // ============================================================
-// JavaScript Regular Expressions (Regex) - Complete Examples
-// Run in Node.js or paste into a browser console
+// JavaScript Regular Expressions (Regex) — Simple Examples
+// ============================================================
+// Run: node 06_regex.js
 // ============================================================
 
 
 // ─────────────────────────────────────────────
-// EXAMPLE 1: Creating Regex — Literal vs Constructor
+// EXAMPLE 1: Creating a Regex Pattern
 // ─────────────────────────────────────────────
-console.log('=== Example 1: Creating Regex ===');
+console.log("=== EXAMPLE 1: Creating a Pattern ===");
 
-const literalPattern = /hello/i;           // literal syntax (preferred)
-const constructorPattern = new RegExp('hello', 'i'); // constructor (useful for dynamic patterns)
+// Two ways to write a regex:
+const pattern1 = /hello/;           // Using slashes (most common)
+const pattern2 = new RegExp("hello"); // Using constructor
 
-console.log(literalPattern.test('Hello World'));      // true
-console.log(constructorPattern.test('Hello World'));  // true
-
-// Dynamic pattern from a variable
-const keyword = 'javascript';
-const dynamicRegex = new RegExp(keyword, 'gi');
-console.log('I love JavaScript and javascript!'.match(dynamicRegex));
-// ['JavaScript', 'javascript']
+console.log(pattern1.test("say hello")); // true
+console.log(pattern2.test("say hello")); // true
+console.log(pattern1.test("say world")); // false
 
 
 // ─────────────────────────────────────────────
-// EXAMPLE 2: Flags in Action
+// EXAMPLE 2: Flags — i (ignore case), g (global)
 // ─────────────────────────────────────────────
-console.log('\n=== Example 2: Flags ===');
+console.log("\n=== EXAMPLE 2: Flags ===");
 
-const sentence = 'The cat sat on the mat';
+// Without flag — case sensitive
+console.log(/hello/.test("Hello")); // false
 
-// No flags: finds only the first match
-console.log(sentence.match(/at/));    // ['at'] at index 5
+// 'i' flag — case insensitive
+console.log(/hello/i.test("Hello")); // true
+console.log(/hello/i.test("HELLO")); // true
 
-// g flag: finds ALL matches
-console.log(sentence.match(/at/g));   // ['at', 'at', 'at']
+// 'g' flag — find ALL matches
+const sentence = "cat bat rat";
+console.log(sentence.match(/at/g)); // ['at', 'at', 'at']
 
-// i flag: case-insensitive
-console.log(/the/i.test('THE'));      // true
-
-// m flag: multiline — ^ and $ match start/end of each line
-const multiLine = 'first line\nsecond line\nthird line';
-const lineStarts = multiLine.match(/^\w+/gm);
-console.log(lineStarts); // ['first', 'second', 'third']
-
-// s flag: dotAll — dot matches newline too
-const withNewline = 'hello\nworld';
-console.log(/hello.world/.test(withNewline));  // false (dot doesn't match \n by default)
-console.log(/hello.world/s.test(withNewline)); // true  (s flag enables dotAll)
+// Without 'g' — only finds FIRST match
+console.log(sentence.match(/at/));  // ['at', index: 1 ...]
 
 
 // ─────────────────────────────────────────────
-// EXAMPLE 3: Character Classes & Anchors
+// EXAMPLE 3: Special Characters \d \w \s
 // ─────────────────────────────────────────────
-console.log('\n=== Example 3: Character Classes & Anchors ===');
+console.log("\n=== EXAMPLE 3: Special Characters ===");
 
-const testStr = 'Hello World 42!';
+// \d = any digit (0-9)
+console.log(/\d/.test("Room 5")); // true  — has a digit
+console.log(/\d/.test("Hello"));  // false — no digit
 
-// \d — digits
-console.log(testStr.match(/\d+/g));       // ['42']
+// \w = any word character (a-z, A-Z, 0-9, _)
+console.log(/\w/.test("hello")); // true
+console.log(/\w/.test("!!!"));   // false
 
-// \w — word characters
-console.log(testStr.match(/\w+/g));       // ['Hello', 'World', '42']
+// \s = any whitespace (space, tab)
+console.log(/\s/.test("hi there")); // true  — has a space
+console.log(/\s/.test("hello"));    // false — no space
 
-// \s — whitespace
-console.log(testStr.split(/\s+/));        // ['Hello', 'World', '42!']
-
-// [aeiou] — custom character class (vowels)
-console.log('Hello World'.match(/[aeiou]/gi)); // ['e', 'o', 'o']
-
-// [^...] — negation
-console.log('abc123'.replace(/[^\d]/g, '')); // '123' (keep only digits)
-
-// ^ and $ — anchors
-console.log(/^Hello/.test('Hello World')); // true (starts with Hello)
-console.log(/^Hello/.test('Say Hello'));   // false
-console.log(/World$/.test('Hello World')); // true  (ends with World)
-
-// \b — word boundary
-console.log('cat concatenate'.match(/\bcat\b/g)); // ['cat'] (not 'cat' inside 'concatenate')
+// . = any character (except newline)
+console.log(/h.t/.test("hat")); // true
+console.log(/h.t/.test("hot")); // true
+console.log(/h.t/.test("hit")); // true
 
 
 // ─────────────────────────────────────────────
-// EXAMPLE 4: Quantifiers — Greedy vs Lazy
+// EXAMPLE 4: Quantifiers — How Many Times?
 // ─────────────────────────────────────────────
-console.log('\n=== Example 4: Quantifiers — Greedy vs Lazy ===');
+console.log("\n=== EXAMPLE 4: Quantifiers ===");
 
-const html = '<b>bold</b> and <i>italic</i>';
+// ?  — 0 or 1 time (makes it optional)
+console.log(/colou?r/.test("color"));  // true  (u is optional)
+console.log(/colou?r/.test("colour")); // true
 
-// Greedy: .+ matches as much as possible
-console.log(html.match(/<.+>/)[0]);    // '<b>bold</b> and <i>italic</i>'
+// +  — 1 or more
+console.log(/\d+/.test("123")); // true  — one or more digits
+console.log(/\d+/.test("abc")); // false — no digits at all
 
-// Lazy: .+? matches as little as possible
-console.log(html.match(/<.+?>/)[0]);   // '<b>'
+// *  — 0 or more
+console.log(/\d*/.test("abc")); // true — even zero digits matches
 
-// All lazy matches
-console.log(html.match(/<.+?>/g));     // ['<b>', '</b>', '<i>', '</i>']
+// {n} — exactly n times
+console.log(/\d{3}/.test("123")); // true  — exactly 3 digits
+console.log(/\d{3}/.test("12"));  // false — only 2 digits
 
-// {n}, {n,m} quantifiers
-console.log(/^\d{4}$/.test('2026'));   // true  (exactly 4 digits)
-console.log(/^\d{4}$/.test('202'));    // false
-console.log(/^\d{2,4}$/.test('20'));   // true  (2–4 digits)
-console.log(/^\d{2,4}$/.test('20262'));// false
-
-
-// ─────────────────────────────────────────────
-// EXAMPLE 5: Capturing Groups & References
-// ─────────────────────────────────────────────
-console.log('\n=== Example 5: Capturing Groups ===');
-
-// Positional capture groups
-const dateStr = '2026-11-17';
-const dateMatch = dateStr.match(/(\d{4})-(\d{2})-(\d{2})/);
-console.log(dateMatch[0]); // '2026-11-17' (full match)
-console.log(dateMatch[1]); // '2026'       (group 1)
-console.log(dateMatch[2]); // '11'         (group 2)
-console.log(dateMatch[3]); // '17'         (group 3)
-
-// Named capturing groups — much more readable!
-const namedMatch = dateStr.match(/(?<year>\d{4})-(?<month>\d{2})-(?<day>\d{2})/);
-const { year, month, day } = namedMatch.groups;
-console.log(`Year: ${year}, Month: ${month}, Day: ${day}`);
-// Year: 2026, Month: 11, Day: 17
-
-// Back-reference in replace: swap first & last name
-const name = 'John Smith';
-const swapped = name.replace(/(\w+) (\w+)/, '$2, $1');
-console.log(swapped); // 'Smith, John'
-
-// Named group in replace
-const reformatted = dateStr.replace(
-  /(?<year>\d{4})-(?<month>\d{2})-(?<day>\d{2})/,
-  '$<month>/$<day>/$<year>'
-);
-console.log(reformatted); // '11/17/2026'
-
-// Non-capturing group (?:...) — group without capturing
-const colorMatch = 'color colour'.match(/colou?r/g);
-console.log(colorMatch); // ['color', 'colour']
+// {n,m} — between n and m times
+console.log(/\d{2,4}/.test("12"));   // true — 2 digits (min is 2)
+console.log(/\d{2,4}/.test("1234")); // true — 4 digits (max is 4)
+console.log(/\d{2,4}/.test("1"));    // false — only 1 digit
 
 
 // ─────────────────────────────────────────────
-// EXAMPLE 6: Email & URL Validation
+// EXAMPLE 5: Character Classes [ ]
 // ─────────────────────────────────────────────
-console.log('\n=== Example 6: Validation ===');
+console.log("\n=== EXAMPLE 5: Character Classes ===");
 
-// Email validation
-function isValidEmail(email) {
-  // Must have local@domain.tld structure
-  return /^[\w.+-]+@[\w-]+\.[a-zA-Z]{2,}$/.test(email);
-}
+// [abc] — matches a, b, or c
+console.log(/[aeiou]/.test("hello")); // true  — 'e' is a vowel
+console.log(/[aeiou]/.test("gym"));   // false — no vowels
 
-console.log(isValidEmail('user@example.com'));      // true
-console.log(isValidEmail('user.name+tag@co.uk'));   // true
-console.log(isValidEmail('bad-email'));             // false
-console.log(isValidEmail('@nodomain.com'));         // false
-console.log(isValidEmail('no@tld'));               // false
+// [a-z] — any lowercase letter
+console.log(/[a-z]/.test("Hello")); // true  — 'e' 'l' 'l' 'o' are lowercase
 
-// URL extraction from text
-const article = 'Check https://google.com and http://mozilla.org for more!';
-const urls = article.match(/https?:\/\/[\w./%-]+/g);
-console.log(urls); // ['https://google.com', 'http://mozilla.org']
+// [0-9] — any digit (same as \d)
+console.log(/[0-9]/.test("Room5")); // true
 
-// IPv4 validation (simple)
-function isValidIPv4(ip) {
-  return /^(25[0-5]|2[0-4]\d|[01]?\d\d?)(\.(?:25[0-5]|2[0-4]\d|[01]?\d\d?)){3}$/.test(ip);
-}
-console.log(isValidIPv4('192.168.1.1'));   // true
-console.log(isValidIPv4('999.0.0.1'));     // false
-console.log(isValidIPv4('192.168.1'));     // false
+// [^abc] — anything EXCEPT a, b, or c
+console.log(/[^aeiou]/.test("sky")); // true  — 's','k','y' are not vowels
+console.log(/[^aeiou]/.test("aei")); // false — all are vowels
 
 
 // ─────────────────────────────────────────────
-// EXAMPLE 7: Phone Number Formatting
+// EXAMPLE 6: ^ and $ — Start and End
 // ─────────────────────────────────────────────
-console.log('\n=== Example 7: Phone Formatting ===');
+console.log("\n=== EXAMPLE 6: Start ^ and End $ ===");
 
-function formatPhone(raw) {
-  // Strip all non-digit characters first
-  const digits = raw.replace(/\D/g, '');
-  // Then apply (XXX) XXX-XXXX format
-  return digits.replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-$3');
-}
+// ^ = must start with
+console.log(/^Hello/.test("Hello World")); // true
+console.log(/^Hello/.test("Say Hello"));   // false — doesn't START with Hello
 
-console.log(formatPhone('8005551234'));       // '(800) 555-1234'
-console.log(formatPhone('800.555.1234'));     // '(800) 555-1234'
-console.log(formatPhone('+1 (800) 555-1234')); // '(800) 555-1234'
+// $ = must end with
+console.log(/World$/.test("Hello World")); // true
+console.log(/World$/.test("World Hello")); // false — doesn't END with World
 
-// Validate E.164 international phone format
-function isValidE164(phone) {
-  return /^\+[1-9]\d{6,14}$/.test(phone);
-}
-console.log(isValidE164('+14155552671')); // true
-console.log(isValidE164('14155552671')); // false (missing +)
+// ^ and $ together = exact match
+console.log(/^hello$/.test("hello"));       // true  — exactly "hello"
+console.log(/^hello$/.test("hello world")); // false — has extra text
 
 
 // ─────────────────────────────────────────────
-// EXAMPLE 8: Password Strength Checker
+// EXAMPLE 7: Alternation | (OR)
 // ─────────────────────────────────────────────
-console.log('\n=== Example 8: Password Strength ===');
+console.log("\n=== EXAMPLE 7: Alternation (OR) ===");
 
-function checkPasswordStrength(pwd) {
-  const checks = {
-    length:    pwd.length >= 8,
-    uppercase: /[A-Z]/.test(pwd),
-    lowercase: /[a-z]/.test(pwd),
-    digit:     /\d/.test(pwd),
-    special:   /[!@#$%^&*()_+\-={}\[\]:;"'<>?,./]/.test(pwd)
-  };
+// cat|dog — matches "cat" OR "dog"
+console.log(/cat|dog/.test("I have a cat")); // true
+console.log(/cat|dog/.test("I have a dog")); // true
+console.log(/cat|dog/.test("I have a fish")); // false
 
-  const passed = Object.values(checks).filter(Boolean).length;
-  const strength = passed <= 2 ? 'Weak' : passed <= 4 ? 'Medium' : 'Strong';
-
-  return { checks, strength };
-}
-
-console.log(checkPasswordStrength('password'));
-// { checks: { length: true, uppercase: false, ... }, strength: 'Weak' }
-
-console.log(checkPasswordStrength('P@ssw0rd'));
-// { checks: { all true }, strength: 'Strong' }
-
-console.log(checkPasswordStrength('Password1'));
-// Missing special char → strength: 'Medium'
+// yes|no|maybe
+const answer = "maybe";
+console.log(/^(yes|no|maybe)$/.test(answer)); // true
 
 
 // ─────────────────────────────────────────────
-// EXAMPLE 9: Lookahead & Lookbehind
+// EXAMPLE 8: test() — Returns true or false
 // ─────────────────────────────────────────────
-console.log('\n=== Example 9: Lookahead & Lookbehind ===');
+console.log("\n=== EXAMPLE 8: test() Method ===");
 
-// Positive lookahead (?=...) — match X only if followed by Y
-const prices = '100 USD 200 EUR 350 USD 50 GBP';
-const usdAmounts = prices.match(/\d+(?= USD)/g);
-console.log(usdAmounts); // ['100', '350']
+const hasDigit = /\d/;
 
-// Negative lookahead (?!...) — match X only if NOT followed by Y
-const notUsd = prices.match(/\d+(?! USD| EUR| GBP)/g);
-console.log(notUsd); // digits not followed by currency (might vary)
+console.log(hasDigit.test("hello123")); // true
+console.log(hasDigit.test("hello"));    // false
 
-// Positive lookbehind (?<=...) — match X only if preceded by Y
-const labeled = '$120 €85 £200';
-const dollarAmounts = labeled.match(/(?<=\$)\d+/g);
-console.log(dollarAmounts); // ['120']
-
-// Negative lookbehind (?<!...) — match X only if NOT preceded by Y
-const nonDollar = labeled.match(/(?<!\$)\d+/g);
-console.log(nonDollar); // ['85', '200']
-
-// Practical: add commas to a number (using lookahead)
-function addCommas(num) {
-  return String(num).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-}
-console.log(addCommas(1234567));   // '1,234,567'
-console.log(addCommas(9876543210)); // '9,876,543,210'
+// Practical: check if a string is all digits
+const isAllDigits = /^\d+$/;
+console.log(isAllDigits.test("12345")); // true
+console.log(isAllDigits.test("123abc")); // false
 
 
 // ─────────────────────────────────────────────
-// EXAMPLE 10: matchAll — Iterator over All Matches
+// EXAMPLE 9: match() — Get the Matches
 // ─────────────────────────────────────────────
-console.log('\n=== Example 10: matchAll ===');
+console.log("\n=== EXAMPLE 9: match() Method ===");
 
-const logData = `
-[ERROR] 2026-11-17 Something went wrong
-[INFO]  2026-11-16 Server started
-[WARN]  2026-11-15 Memory usage high
-`;
+const text = "Order: 3 apples, 10 bananas, 2 oranges";
 
-// Extract level + date from each log line
-const logPattern = /\[(\w+)\]\s+(\d{4}-\d{2}-\d{2})/g;
-const logMatches = [...logData.matchAll(logPattern)];
+// Without 'g' — returns first match only
+const firstNumber = text.match(/\d+/);
+console.log(firstNumber[0]); // '3'
 
-logMatches.forEach(match => {
-  console.log(`Level: ${match[1]}, Date: ${match[2]}`);
-});
-// Level: ERROR, Date: 2026-11-17
-// Level: INFO,  Date: 2026-11-16
-// Level: WARN,  Date: 2026-11-15
+// With 'g' — returns ALL matches
+const allNumbers = text.match(/\d+/g);
+console.log(allNumbers); // ['3', '10', '2']
+
+// No match returns null
+const noMatch = "hello".match(/\d+/g);
+console.log(noMatch); // null
 
 
 // ─────────────────────────────────────────────
-// EXAMPLE 11: exec() with Stateful lastIndex
+// EXAMPLE 10: replace() — Replace Text
 // ─────────────────────────────────────────────
-console.log('\n=== Example 11: exec() & lastIndex ===');
+console.log("\n=== EXAMPLE 10: replace() Method ===");
 
-const code = 'alpha 10 beta 20 gamma 30';
-const numPattern = /\d+/g;
-let execMatch;
+// Replace first match
+const str1 = "I love cats";
+console.log(str1.replace(/cats/, "dogs")); // "I love dogs"
 
-// exec() advances lastIndex on each call when using g flag
-while ((execMatch = numPattern.exec(code)) !== null) {
-  console.log(`Found: ${execMatch[0]} at index ${execMatch.index}`);
-}
-// Found: 10 at index 6
-// Found: 20 at index 16
-// Found: 30 at index 23
+// Replace ALL matches with 'g' flag
+const str2 = "cat and cat and cat";
+console.log(str2.replace(/cat/g, "dog")); // "dog and dog and dog"
 
-// ⚠️ Pitfall: stateful regex reuse between .test() calls
-const stateRe = /\d/g;
-console.log(stateRe.test('a1b')); // true  (lastIndex → 2)
-console.log(stateRe.test('a1b')); // false (starts from index 2!)
-// Fix:
-stateRe.lastIndex = 0;
-console.log(stateRe.test('a1b')); // true again
+// Remove extra spaces
+const messy = "Hello    World   how   are  you";
+const clean = messy.replace(/\s+/g, " "); // replace multiple spaces with one
+console.log(clean); // "Hello World how are you"
 
 
 // ─────────────────────────────────────────────
-// EXAMPLE 12: Text Transformation Utilities
+// EXAMPLE 11: split() — Split by Pattern
 // ─────────────────────────────────────────────
-console.log('\n=== Example 12: Text Transformation ===');
+console.log("\n=== EXAMPLE 11: split() Method ===");
 
-// 1. Slugify: convert a title to a URL-safe slug
-function slugify(title) {
-  return title
-    .toLowerCase()
-    .replace(/[^\w\s-]/g, '')     // remove non-word chars (except spaces and dashes)
-    .replace(/[\s_]+/g, '-')      // replace spaces/underscores with dash
-    .replace(/^-+|-+$/g, '');     // trim leading/trailing dashes
-}
-console.log(slugify('Hello, World! This is a Test.')); 
-// 'hello-world-this-is-a-test'
-console.log(slugify('  --Regex 101: A Complete Guide--  '));
-// 'regex-101-a-complete-guide'
+// Split on comma, with optional spaces around it
+const csv = "apple, banana,  cherry,date";
+const fruits = csv.split(/,\s*/);
+console.log(fruits); // ['apple', 'banana', 'cherry', 'date']
 
-// 2. Title Case
-function toTitleCase(str) {
-  return str.replace(/\b\w/g, char => char.toUpperCase());
-}
-console.log(toTitleCase('the quick brown fox')); // 'The Quick Brown Fox'
-
-// 3. Camel case to kebab case
-function camelToKebab(str) {
-  return str
-    .replace(/([A-Z])/g, '-$1')  // insert dash before each uppercase letter
-    .toLowerCase();
-}
-console.log(camelToKebab('myVariableName'));   // 'my-variable-name'
-console.log(camelToKebab('getUserProfile'));   // 'get-user-profile'
-
-// 4. Strip HTML tags
-function stripHtml(html) {
-  return html.replace(/<[^>]+>/g, '');
-}
-console.log(stripHtml('<p>Hello <b>World</b></p>')); // 'Hello World'
-
-// 5. Mask credit card number (show last 4 digits only)
-function maskCard(number) {
-  return number.replace(/\d(?=\d{4})/g, '*');
-}
-console.log(maskCard('1234567812345678')); // '************5678'
+// Split on one or more spaces
+const words = "Hello   World  JS".split(/\s+/);
+console.log(words); // ['Hello', 'World', 'JS']
 
 
 // ─────────────────────────────────────────────
-// EXAMPLE 13: Simple Tokenizer / Lexer
+// EXAMPLE 12: Simple Real-World Uses
 // ─────────────────────────────────────────────
-console.log('\n=== Example 13: Tokenizer ===');
+console.log("\n=== EXAMPLE 12: Real-World Uses ===");
 
-function tokenize(expression) {
-  // Matches: numbers, operators, parentheses, identifiers
-  const TOKEN_RE = /\s*(\d+\.?\d*|[+\-*/()]|[a-zA-Z_]\w*)\s*/g;
-  const tokens = [];
-  let m;
-  while ((m = TOKEN_RE.exec(expression)) !== null) {
-    tokens.push(m[1]);
-  }
-  return tokens;
-}
+// 1. Basic email check
+const emailPattern = /^\S+@\S+\.\S+$/;
+console.log("--- Email Check ---");
+console.log(emailPattern.test("user@example.com")); // true
+console.log(emailPattern.test("notanemail"));        // false
+console.log(emailPattern.test("bad@"));              // false
 
-console.log(tokenize('3 + 4 * (x - 2)'));
-// ['3', '+', '4', '*', '(', 'x', '-', '2', ')']
+// 2. Simple phone number check (11 digits starting with 0)
+const phonePattern = /^0\d{10}$/;
+console.log("\n--- Phone Check ---");
+console.log(phonePattern.test("03001234567")); // true
+console.log(phonePattern.test("3001234567"));  // false (no leading 0)
+console.log(phonePattern.test("030012345"));   // false (too short)
 
-console.log(tokenize('velocity = 100.5 * time'));
-// ['velocity', '=', '100.5', '*', 'time']
+// 3. Check if password has at least 6 characters
+const passwordPattern = /^.{6,}$/;
+console.log("\n--- Password Length Check ---");
+console.log(passwordPattern.test("abc123")); // true  — 6 chars
+console.log(passwordPattern.test("abc"));    // false — only 3 chars
 
+// 4. Extract all numbers from a string
+const data = "I have 3 cats, 12 books, and 1 dog";
+const nums = data.match(/\d+/g);
+console.log("\n--- Extract Numbers ---");
+console.log(nums); // ['3', '12', '1']
 
-// ─────────────────────────────────────────────
-// EXAMPLE 14: split() with Regex
-// ─────────────────────────────────────────────
-console.log('\n=== Example 14: split() with Regex ===');
-
-// Split on any amount of whitespace
-console.log('one   two\tthree\nfour'.split(/\s+/));
-// ['one', 'two', 'three', 'four']
-
-// Split on comma with optional surrounding whitespace
-console.log('red , green,  blue , yellow'.split(/\s*,\s*/));
-// ['red', 'green', 'blue', 'yellow']
-
-// Split but KEEP the delimiter using a capturing group
-const parts = 'one1two2three'.split(/(\d)/);
-console.log(parts); // ['one', '1', 'two', '2', 'three']
-
-// Split a sentence into sentences
-const text = 'Hello! How are you? I am fine. Great.';
-console.log(text.split(/(?<=[.!?])\s+/));
-// ['Hello!', 'How are you?', 'I am fine.', 'Great.']
+// 5. Escape a literal dot (. means "any char", \. means actual dot)
+console.log("\n--- Literal Dot ---");
+console.log(/3\.14/.test("3.14")); // true  — real dot
+console.log(/3\.14/.test("3X14")); // false — X is not a dot
 
 
 // ─────────────────────────────────────────────
-// EXAMPLE 15: Real-World — Template Engine
+// SUMMARY
 // ─────────────────────────────────────────────
-console.log('\n=== Example 15: Mini Template Engine ===');
-
-function renderTemplate(template, data) {
-  // Replace {{variableName}} with the matching value from data
-  return template.replace(/\{\{\s*(\w+)\s*\}\}/g, (match, key) => {
-    return key in data ? data[key] : match; // leave unreplaced if key missing
-  });
-}
-
-const tmpl = 'Hello, {{ name }}! You have {{ count }} new messages from {{ sender }}.';
-const result = renderTemplate(tmpl, {
-  name: 'Alice',
-  count: 5,
-  sender: 'Bob'
-});
-console.log(result);
-// 'Hello, Alice! You have 5 new messages from Bob.'
-
-// Key missing → stays as is
-const partial = renderTemplate('Hi {{ name }}, your score is {{ score }}.', { name: 'Eve' });
-console.log(partial);
-// 'Hi Eve, your score is {{ score }}.'
-
-
-// ─────────────────────────────────────────────
-// SUMMARY TABLE (as console output)
-// ─────────────────────────────────────────────
-console.log('\n=== Regex Quick Reference ===');
-console.log([
-  '.        → any char except newline',
-  '\\d       → digit [0-9]',
-  '\\w       → word char [a-zA-Z0-9_]',
-  '\\s       → whitespace',
-  '^        → start of string',
-  '$        → end of string',
-  '\\b       → word boundary',
-  '*        → 0 or more (greedy)',
-  '+        → 1 or more (greedy)',
-  '?        → 0 or 1 (optional)',
-  '*?  +?   → lazy quantifiers',
-  '{n,m}    → between n and m times',
-  '(x)      → capturing group',
-  '(?:x)    → non-capturing group',
-  '(?<n>x)  → named capturing group',
-  '(?=x)    → positive lookahead',
-  '(?!x)    → negative lookahead',
-  '(?<=x)   → positive lookbehind',
-  '(?<!x)   → negative lookbehind',
-  'g i m s u → flags: global, ignoreCase, multiline, dotAll, unicode',
-].join('\n'));
+console.log("\n=== REGEX QUICK REFERENCE ===");
+console.log(`
+Pattern  | Meaning
+---------|----------------------------------
+/abc/    | Matches the text "abc"
+/abc/i   | Case-insensitive match
+/abc/g   | Find ALL matches
+.        | Any character (not newline)
+\\d       | Any digit (0-9)
+\\w       | Any word character (a-z, 0-9, _)
+\\s       | Any whitespace
+[abc]    | a, b, or c
+[^abc]   | Anything EXCEPT a, b, or c
+[a-z]    | Any lowercase letter
+^        | Start of string
+$        | End of string
++        | One or more
+*        | Zero or more
+?        | Optional (0 or 1)
+{n}      | Exactly n times
+{n,m}    | Between n and m times
+a|b      | a OR b
+(abc)    | Group
+\\.      | Literal dot (escape special chars)
+`);

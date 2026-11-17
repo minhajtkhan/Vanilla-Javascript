@@ -1,300 +1,290 @@
-# Regular Expressions (Regex) in JavaScript
+# JavaScript Regular Expressions (Regex)
 
-## Introduction
+## What is Regex?
 
-Regular expressions (regex or regexp) are powerful patterns used to match, search, replace, and validate strings. In JavaScript, regex is a first-class feature built into the language through the `RegExp` object and string methods that accept regex patterns.
+A **Regular Expression (Regex)** is a pattern used to search, match, or replace text.
 
-Whether you're validating an email address, parsing a log file, or transforming text, regex gives you a concise and expressive way to describe string patterns.
-
----
-
-## 1. Creating a Regular Expression
-
-There are two ways to create a regex in JavaScript:
-
-### Literal Syntax (preferred)
-```js
-const pattern = /hello/;
-```
-
-### Constructor Syntax (useful for dynamic patterns)
-```js
-const pattern = new RegExp('hello');
-const dynamicPattern = new RegExp(userInput, 'i'); // built at runtime
-```
-
-> **When to use the constructor:** When the pattern is built dynamically from variables or user input.
-
----
-
-## 2. Regex Flags
-
-Flags modify how the pattern matches:
-
-| Flag | Meaning |
-|------|---------|
-| `g`  | **Global** – find all matches, not just the first |
-| `i`  | **Case-insensitive** – ignore uppercase/lowercase |
-| `m`  | **Multiline** – `^` and `$` match start/end of each line |
-| `s`  | **Dotall** – `.` matches newline characters too |
-| `u`  | **Unicode** – enables full Unicode matching |
-| `d`  | **Indices** – includes match start/end indices |
+Think of it like a **search filter** — instead of searching for an exact word, you search for a **pattern**.
 
 ```js
-const pattern = /hello/gi; // global + case-insensitive
+// Search for the word "cat" in a string
+const pattern = /cat/;
+console.log(pattern.test("I have a cat")); // true
+console.log(pattern.test("I have a dog")); // false
 ```
 
 ---
 
-## 3. Special Characters & Metacharacters
+## 1. How to Write a Regex
 
-### Character Classes
-| Pattern | Matches |
-|---------|---------|
-| `.`     | Any character except newline |
-| `\d`    | Any digit `[0-9]` |
-| `\D`    | Any non-digit |
-| `\w`    | Word character `[a-zA-Z0-9_]` |
-| `\W`    | Non-word character |
-| `\s`    | Whitespace (space, tab, newline) |
-| `\S`    | Non-whitespace |
-| `[abc]` | Any of `a`, `b`, or `c` |
-| `[^abc]`| NOT `a`, `b`, or `c` |
-| `[a-z]` | Any lowercase letter |
+There are two ways:
 
-### Anchors
-| Pattern | Matches |
-|---------|---------|
-| `^`     | Start of string (or line in multiline mode) |
-| `$`     | End of string (or line in multiline mode) |
-| `\b`    | Word boundary |
-| `\B`    | Non-word boundary |
+```js
+// Way 1 — Using slashes (most common)
+const pattern1 = /hello/;
 
-### Quantifiers
-| Pattern | Meaning |
-|---------|---------|
-| `*`     | 0 or more |
-| `+`     | 1 or more |
-| `?`     | 0 or 1 (optional) |
-| `{n}`   | Exactly n times |
-| `{n,}`  | At least n times |
-| `{n,m}` | Between n and m times |
-| `*?`, `+?` | Lazy (match as few as possible) |
+// Way 2 — Using RegExp constructor
+const pattern2 = new RegExp("hello");
+```
 
-### Groups & Alternation
-| Pattern     | Meaning |
-|-------------|---------|
-| `(abc)`     | Capturing group |
-| `(?:abc)`   | Non-capturing group |
-| `(?<name>abc)` | Named capturing group |
-| `a\|b`      | Alternation: match `a` or `b` |
-| `(?=abc)`   | Lookahead: must be followed by `abc` |
-| `(?!abc)`   | Negative lookahead |
-| `(?<=abc)`  | Lookbehind: must be preceded by `abc` |
-| `(?<!abc)`  | Negative lookbehind |
+> Use `/pattern/` (slashes) most of the time. Use `new RegExp()` only when the pattern comes from a variable.
 
 ---
 
-## 4. Core Methods
+## 2. Flags
 
-### `RegExp.prototype.test(string)`
-Returns `true`/`false` — does the pattern match anywhere in the string?
+Flags change how the pattern matches:
 
-```js
-/^\d{3}-\d{4}$/.test('555-1234'); // true
-/^\d{3}-\d{4}$/.test('abc-1234'); // false
-```
-
-### `String.prototype.match(regex)`
-Returns an array of matches (or `null`). Without `g` flag, includes capture groups.
+| Flag | Meaning | Example |
+|------|---------|---------|
+| `i`  | Ignore case (case-insensitive) | `/hello/i` matches "Hello", "HELLO" |
+| `g`  | Global — find ALL matches, not just first | `/cat/g` |
+| `m`  | Multiline — `^` and `$` match each line | `/^hello/m` |
 
 ```js
-'Hello World'.match(/\w+/g); // ['Hello', 'World']
-'2026-11-17'.match(/(\d{4})-(\d{2})-(\d{2})/); // ['2026-11-17', '2026', '11', '17']
-```
+// Without flag — case sensitive
+console.log(/hello/.test("Hello")); // false
 
-### `String.prototype.matchAll(regex)`
-Returns an iterator of ALL matches including capture groups (requires `g` flag).
+// With 'i' flag — case insensitive
+console.log(/hello/i.test("Hello")); // true
 
-```js
-const str = 'cat bat sat';
-const matches = [...str.matchAll(/(.)at/g)];
-// Each match includes full match + groups + index
-```
-
-### `String.prototype.replace(regex, replacement)`
-Replaces matches. Use `$1`, `$2` etc. to reference capture groups in the replacement string.
-
-```js
-'John Smith'.replace(/(\w+) (\w+)/, '$2, $1'); // 'Smith, John'
-'hello world'.replace(/\b\w/g, c => c.toUpperCase()); // 'Hello World'
-```
-
-### `String.prototype.replaceAll(regex, replacement)`
-Like `replace` but requires the `g` flag when using regex.
-
-### `String.prototype.search(regex)`
-Returns the index of the first match, or `-1`.
-
-```js
-'hello world'.search(/world/); // 6
-```
-
-### `String.prototype.split(regex)`
-Splits a string using a regex as the delimiter.
-
-```js
-'one, two,three ,four'.split(/\s*,\s*/); // ['one', 'two', 'three', 'four']
-```
-
-### `RegExp.prototype.exec(string)`
-Executes a search, returning the match array (with index) or `null`. When used with `g` or `y` flags, it maintains state via `lastIndex`.
-
-```js
-const re = /\d+/g;
-const str = 'abc 123 def 456';
-let match;
-while ((match = re.exec(str)) !== null) {
-  console.log(`Found ${match[0]} at index ${match.index}`);
-}
+// With 'g' flag — find all matches
+const str = "cat bat sat";
+console.log(str.match(/at/g)); // ['at', 'at', 'at']
 ```
 
 ---
 
-## 5. Practical Examples
+## 3. Basic Special Characters
 
-### Example 1 — Email Validation
+| Symbol | Meaning | Example Pattern | Matches |
+|--------|---------|-----------------|---------|
+| `.`    | Any single character (except newline) | `/h.t/` | "hat", "hot", "hit" |
+| `^`    | Start of string | `/^Hello/` | "Hello World" (starts with Hello) |
+| `$`    | End of string | `/World$/` | "Hello World" (ends with World) |
+| `\d`   | Any digit (0–9) | `/\d/` | "5", "3" |
+| `\w`   | Any word character (a–z, A–Z, 0–9, _) | `/\w/` | "a", "Z", "5", "_" |
+| `\s`   | Any whitespace (space, tab) | `/\s/` | " ", "\t" |
+| `\D`   | NOT a digit | `/\D/` | "a", "!" |
+| `\W`   | NOT a word character | `/\W/` | "!", " ", "@" |
+
 ```js
-function isValidEmail(email) {
-  return /^[\w.+-]+@[\w-]+\.[a-zA-Z]{2,}$/.test(email);
-}
-isValidEmail('user@example.com'); // true
-isValidEmail('bad@');             // false
-```
-
-### Example 2 — Phone Number Formatting
-```js
-function formatPhone(raw) {
-  const digits = raw.replace(/\D/g, '');
-  return digits.replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-$3');
-}
-formatPhone('8005551234'); // '(800) 555-1234'
-```
-
-### Example 3 — Extract All URLs
-```js
-const text = 'Visit https://example.com or http://test.org for info.';
-const urls = text.match(/https?:\/\/[\w./%-]+/g);
-// ['https://example.com', 'http://test.org']
-```
-
-### Example 4 — Password Strength
-```js
-function checkPassword(pwd) {
-  const hasUpper = /[A-Z]/.test(pwd);
-  const hasLower = /[a-z]/.test(pwd);
-  const hasDigit = /\d/.test(pwd);
-  const hasSpecial = /[!@#$%^&*]/.test(pwd);
-  const isLong = pwd.length >= 8;
-  return hasUpper && hasLower && hasDigit && hasSpecial && isLong;
-}
-checkPassword('P@ssw0rd'); // true
-checkPassword('password'); // false
-```
-
-### Example 5 — Named Capture Groups
-```js
-const dateStr = '2026-11-17';
-const { year, month, day } = dateStr.match(
-  /(?<year>\d{4})-(?<month>\d{2})-(?<day>\d{2})/
-).groups;
-console.log(year, month, day); // '2026' '11' '17'
-```
-
-### Example 6 — Lookahead / Lookbehind
-```js
-// Price: match digits only if followed by ' USD'
-'100 USD 200 EUR'.match(/\d+(?= USD)/g); // ['100']
-
-// Match digits only if preceded by '$'
-'$50 and 30 items'.match(/(?<=\$)\d+/g); // ['50']
-```
-
-### Example 7 — Tokenizer / Lexer
-```js
-const code = 'let x = 42;';
-const TOKEN = /([a-z]+)|(\d+)|(=|;)/g;
-let m;
-while ((m = TOKEN.exec(code)) !== null) {
-  if (m[1]) console.log('KEYWORD/ID:', m[1]);
-  else if (m[2]) console.log('NUMBER:', m[2]);
-  else if (m[3]) console.log('SYMBOL:', m[3]);
-}
-```
-
-### Example 8 — Slug Generation
-```js
-function slugify(title) {
-  return title
-    .toLowerCase()
-    .replace(/[^\w\s-]/g, '')   // remove special chars
-    .replace(/[\s_]+/g, '-')    // spaces/underscores → dash
-    .replace(/^-+|-+$/g, '');   // trim leading/trailing dashes
-}
-sluggify('Hello, World! This is a Test.'); // 'hello-world-this-is-a-test'
+console.log(/\d/.test("Room 5"));   // true  — has a digit
+console.log(/\d/.test("Hello"));    // false — no digit
+console.log(/\w/.test("hello"));    // true
+console.log(/\s/.test("hi there")); // true  — has a space
 ```
 
 ---
 
-## 6. Common Pitfalls & Tips
+## 4. Quantifiers — How Many Times?
 
-### ⚠️ Forgetting the `g` flag with `exec()` causes an infinite loop
-If you use `exec()` in a `while` loop, **always** include the `g` or `y` flag, or `lastIndex` never advances.
+| Symbol | Meaning |
+|--------|---------|
+| `?`    | 0 or 1 time (optional) |
+| `*`    | 0 or more times |
+| `+`    | 1 or more times |
+| `{n}`  | Exactly n times |
+| `{n,}` | At least n times |
+| `{n,m}`| Between n and m times |
 
-### ⚠️ Stateful regex with `g` flag
-RegExp objects with the `g` flag track `lastIndex`. Reusing the same regex object across calls can produce unexpected results.
 ```js
-const re = /\d/g;
-re.test('a1b'); // true  (lastIndex → 2)
-re.test('a1b'); // false (starts from index 2 — misses!)
-// Fix: reset re.lastIndex = 0; or use a fresh literal each time
+// ? — optional character
+console.log(/colou?r/.test("color"));   // true (u is optional)
+console.log(/colou?r/.test("colour"));  // true
+
+// + — one or more digits
+console.log(/\d+/.test("123")); // true
+console.log(/\d+/.test("abc")); // false
+
+// {n} — exact count
+console.log(/\d{3}/.test("123"));  // true  — exactly 3 digits
+console.log(/\d{3}/.test("12"));   // false — only 2 digits
+
+// {n,m} — range
+console.log(/\d{2,4}/.test("12"));   // true  — 2 digits
+console.log(/\d{2,4}/.test("1234")); // true  — 4 digits
+console.log(/\d{2,4}/.test("1"));    // false — only 1 digit
 ```
 
-### ⚠️ Escaping special characters
-If you're matching literal dots, brackets, etc., escape them:
+---
+
+## 5. Character Classes `[ ]`
+
+Square brackets let you specify a **set of allowed characters**:
+
 ```js
-/example\.com/   // matches 'example.com' literally, not 'exampleXcom'
+// [abc] — matches 'a', 'b', or 'c'
+console.log(/[abc]/.test("apple")); // true  — has 'a'
+console.log(/[abc]/.test("dog"));   // false — no a, b, or c
+
+// [a-z] — any lowercase letter
+console.log(/[a-z]/.test("Hello")); // true  — has lowercase letters
+
+// [0-9] — same as \d
+console.log(/[0-9]/.test("Room5")); // true
+
+// [^abc] — NOT a, b, or c (^ inside [] means NOT)
+console.log(/[^abc]/.test("dog")); // true  — 'd' is not a, b, or c
+console.log(/[^abc]/.test("cab")); // false — all chars are a, b, or c
 ```
 
-### ⚠️ Greedy vs. Lazy quantifiers
+---
+
+## 6. Groups `( )`
+
+Parentheses group parts of a pattern together:
+
 ```js
-'<b>bold</b>'.match(/<.+>/)[0];  // '<b>bold</b>' (greedy)
-'<b>bold</b>'.match(/<.+?>/)[0]; // '<b>' (lazy)
+// (ab)+ — the group "ab" repeated one or more times
+console.log(/(ab)+/.test("ab"));     // true
+console.log(/(ab)+/.test("ababab")); // true
+
+// Alternation with | (OR)
+console.log(/cat|dog/.test("I have a cat")); // true
+console.log(/cat|dog/.test("I have a dog")); // true
+console.log(/cat|dog/.test("I have a fish")); // false
 ```
 
-### ✅ Use `String.matchAll` over manual `exec` loops
-`matchAll` is cleaner, non-mutating, and returns a proper iterator.
+---
 
-### ✅ Name your capture groups
-Using `(?<name>...)` makes your regex far more readable and future-proof than positional `$1`, `$2`.
+## 7. The Main Regex Methods
+
+### `test()` — Returns true or false
+
+```js
+const hasNumber = /\d/;
+console.log(hasNumber.test("abc123")); // true
+console.log(hasNumber.test("abcdef")); // false
+```
+
+### `match()` — Returns matched results
+
+```js
+const str = "Today is 2026-11-17";
+
+// Without 'g' flag — returns first match + details
+console.log(str.match(/\d+/));
+// ['2026', index: 9, ...]
+
+// With 'g' flag — returns all matches as array
+console.log(str.match(/\d+/g));
+// ['2026', '11', '17']
+```
+
+### `replace()` — Replace matched text
+
+```js
+const greeting = "Hello World";
+
+// Replace first match
+console.log(greeting.replace(/World/, "JavaScript"));
+// "Hello JavaScript"
+
+// Replace all with 'g' flag
+const text = "cat and cat and cat";
+console.log(text.replace(/cat/g, "dog"));
+// "dog and dog and dog"
+```
+
+### `split()` — Split string using pattern
+
+```js
+const csv = "apple, banana,  cherry,date";
+
+// Split on comma + optional spaces
+const fruits = csv.split(/,\s*/);
+console.log(fruits); // ['apple', 'banana', 'cherry', 'date']
+```
+
+---
+
+## 8. Simple Real-World Examples
+
+### Check if input is only digits
+```js
+const isAllDigits = /^\d+$/;
+console.log(isAllDigits.test("12345")); // true
+console.log(isAllDigits.test("123abc")); // false
+```
+
+### Basic Email Check
+```js
+const emailPattern = /^\S+@\S+\.\S+$/;
+console.log(emailPattern.test("user@example.com")); // true
+console.log(emailPattern.test("notanemail"));        // false
+```
+
+### Check a Phone Number (simple)
+```js
+// Matches: 03001234567 (11 digits starting with 0)
+const phone = /^0\d{10}$/;
+console.log(phone.test("03001234567")); // true
+console.log(phone.test("3001234567"));  // false
+console.log(phone.test("0300123456"));  // false (too short)
+```
+
+### Remove extra spaces
+```js
+const messy = "Hello    World   how   are  you";
+const clean = messy.replace(/\s+/g, " ");
+console.log(clean); // "Hello World how are you"
+```
+
+### Extract all numbers from a string
+```js
+const data = "I have 3 cats, 2 dogs, and 10 fish";
+const numbers = data.match(/\d+/g);
+console.log(numbers); // ['3', '2', '10']
+```
+
+---
+
+## Common Pitfalls & Tips
+
+### ⚠️ Dot matches almost everything
+```js
+// . matches ANY character except newline
+console.log(/h.t/.test("h@t")); // true — not just letters!
+// Use \. to match a literal dot
+console.log(/3\.14/.test("3.14")); // true
+console.log(/3\.14/.test("3X14")); // false
+```
+
+### ⚠️ `^` has two meanings
+```js
+// At start of pattern: matches start of string
+/^hello/ — string must START with hello
+
+// Inside [ ]: means NOT
+/[^abc]/ — matches anything EXCEPT a, b, c
+```
 
 ### ✅ Test your regex
-Use tools like [regex101.com](https://regex101.com) for real-time debugging with explanations.
+Use [regex101.com](https://regex101.com) to build and test patterns visually — it explains what each part does!
 
 ---
 
-## 7. Summary
+## Summary
 
-| Feature | Takeaway |
-|---------|----------|
-| Literals vs Constructor | Use literals normally; constructor for dynamic patterns |
-| Flags | `g`, `i`, `m`, `s` cover most use cases |
-| Character classes | `\d`, `\w`, `\s` and their negations are your workhorses |
-| Anchors | `^`, `$`, `\b` pin your pattern to the right position |
-| Quantifiers | Greedy by default; add `?` to make lazy |
-| Groups | Capture with `()`, name with `(?<name>)`, non-capture with `(?:)` |
-| Lookarounds | Assert context without consuming characters |
-| Methods | `test`, `match`, `matchAll`, `replace`, `split`, `exec` |
-| Pitfalls | Stateful `g` flag, greedy matching, unescaped special chars |
+| Concept | What it does | Example |
+|---------|-------------|---------|
+| `/pattern/` | Create a regex | `/hello/` |
+| `i` flag | Case-insensitive | `/hello/i` |
+| `g` flag | Find all matches | `/\d/g` |
+| `.` | Any character | `/h.t/` |
+| `\d` | Any digit | `/\d+/` |
+| `\w` | Any word char | `/\w+/` |
+| `\s` | Whitespace | `/\s+/` |
+| `[]` | Character set | `/[aeiou]/` |
+| `+` | 1 or more | `/\d+/` |
+| `*` | 0 or more | `/\d*/` |
+| `?` | Optional | `/colou?r/` |
+| `{n,m}` | Repeat range | `/\d{2,4}/` |
+| `^` / `$` | Start / End | `/^hello$/` |
+| `test()` | Returns boolean | `pattern.test(str)` |
+| `match()` | Returns matches | `str.match(pattern)` |
+| `replace()` | Replace text | `str.replace(pattern, newText)` |
 
-Regex is a skill that grows with practice. Start simple, test often, and reach for named groups and lookarounds as your patterns get complex.
+> [!TIP]
+> Start simple! Write patterns piece by piece and test each part. Regex is not hard — it just looks scary at first glance.
